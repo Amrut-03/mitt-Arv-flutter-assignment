@@ -6,8 +6,8 @@ class CustomTextField extends StatelessWidget {
   final String labelText;
   final TextEditingController controller;
   final bool obscureText;
+  final VoidCallback? onToggleObscure;
   final TextInputType keyboardType;
-  final IconData? sufixIcon;
   final String? Function(String?)? validator;
 
   const CustomTextField({
@@ -15,8 +15,8 @@ class CustomTextField extends StatelessWidget {
     required this.labelText,
     required this.controller,
     this.obscureText = false,
+    this.onToggleObscure,
     this.keyboardType = TextInputType.text,
-    this.sufixIcon,
     this.validator,
   }) : super(key: key);
 
@@ -31,16 +31,15 @@ class CustomTextField extends StatelessWidget {
         validator: validator,
         decoration: InputDecoration(
           labelText: labelText,
-          // suffixIcon: obscureText ? Icon(Icons.eye),
-          labelStyle: GoogleFonts.ubuntu(
-            color: Colors.black,
+          labelStyle: GoogleFonts.ubuntu(color: Colors.black),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.r),
+            borderSide: BorderSide(color: Colors.black26, width: 2.w),
           ),
           focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.black,
-                width: 2.w,
-              ),
-              borderRadius: BorderRadius.circular(10.r)),
+            borderSide: BorderSide(color: Colors.black, width: 2.w),
+            borderRadius: BorderRadius.circular(10.r),
+          ),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.r)),
           contentPadding:
               EdgeInsets.symmetric(vertical: 14.h, horizontal: 16.w),

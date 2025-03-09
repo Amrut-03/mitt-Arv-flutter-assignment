@@ -19,6 +19,7 @@ class MyApp extends StatelessWidget {
       designSize: const Size(412, 868),
       builder: (context, child) {
         return GetMaterialApp(
+          debugShowCheckedModeBanner: false,
           home: FutureBuilder<bool>(
             future: Authcontroller().isTokenValid(),
             builder: (context, snapshot) {
@@ -28,7 +29,7 @@ class MyApp extends StatelessWidget {
               } else if (snapshot.hasData && snapshot.data == true) {
                 return HomeScreen();
               } else {
-                return SigninScreen();
+                return const SigninScreen();
               }
             },
           ),

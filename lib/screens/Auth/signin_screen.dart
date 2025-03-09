@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mitt_arv_e_commerce_app/Controllers/authController.dart';
 import 'package:mitt_arv_e_commerce_app/screens/Auth/signup_screen.dart';
-import 'package:mitt_arv_e_commerce_app/utils/constant.dart';
 import 'package:mitt_arv_e_commerce_app/widgets/button.dart';
 import 'package:mitt_arv_e_commerce_app/widgets/textfield.dart';
 
@@ -31,68 +30,98 @@ class _SigninScreenState extends State<SigninScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Template.background_clr,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Template.background_clr,
+        backgroundColor: Colors.white,
       ),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 20.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Align(
-                alignment: Alignment.center,
-                child: Text(
-                  "Sign In",
-                  style: GoogleFonts.ubuntu(
-                    color: Colors.black,
-                    fontSize: 30.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  height: 20.h,
                 ),
-              ),
-              CustomTextField(
-                labelText: "Username",
-                controller: nameController,
-                keyboardType: TextInputType.emailAddress,
-              ),
-              CustomTextField(
-                labelText: "Password",
-                controller: passwordController,
-                obscureText: true,
-              ),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: TextButton(
-                  onPressed: () => Get.to(() => SignupScreen()),
+                Align(
+                  alignment: Alignment.center,
                   child: Text(
-                    "I don't have any account",
-                    textAlign: TextAlign.end,
+                    "Sign In",
                     style: GoogleFonts.ubuntu(
                       color: Colors.black,
-                      fontSize: 15.sp,
-                      decoration: TextDecoration.underline,
+                      fontSize: 30.sp,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
-              ),
-              Obx(
-                () {
-                  return authController.isLoading.value
-                      ? const Center(child: CircularProgressIndicator())
-                      : CustomButton(
-                          text: "Sign-In",
-                          onPressed: () {
-                            authController.signin(
-                              name: nameController.text,
-                              password: passwordController.text,
-                            );
-                          },
-                        );
-                },
-              ),
-            ],
+                SizedBox(
+                  height: 15.h,
+                ),
+                Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    "Hi! welcome back, you've been missed",
+                    style: GoogleFonts.ubuntu(
+                      color: Colors.black54,
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 20.h,
+                ),
+                CustomTextField(
+                  labelText: "Username",
+                  controller: nameController,
+                  keyboardType: TextInputType.emailAddress,
+                  obscureText: false,
+                ),
+                CustomTextField(
+                  labelText: "Password",
+                  controller: passwordController,
+                  obscureText: true,
+                ),
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: TextButton(
+                    onPressed: () => Get.to(() => SignupScreen()),
+                    child: Text(
+                      "I don't have any account",
+                      textAlign: TextAlign.end,
+                      style: GoogleFonts.ubuntu(
+                        color: Colors.black54,
+                        fontSize: 15.sp,
+                        fontWeight: FontWeight.w600,
+                        // decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 20.h,
+                ),
+                Obx(
+                  () {
+                    return authController.isLoading.value
+                        ? const Center(
+                            child: CircularProgressIndicator(
+                            color: Colors.black,
+                          ))
+                        : CustomButton(
+                            text: "Sign-In",
+                            onPressed: () {
+                              authController.signin(
+                                name: nameController.text,
+                                password: passwordController.text,
+                              );
+                            },
+                          );
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),

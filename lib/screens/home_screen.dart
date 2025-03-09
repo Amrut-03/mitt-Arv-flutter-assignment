@@ -4,36 +4,41 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mitt_arv_e_commerce_app/Controllers/authController.dart';
 import 'package:mitt_arv_e_commerce_app/Controllers/productController.dart';
 import 'package:mitt_arv_e_commerce_app/screens/cart_screen.dart';
 import 'package:mitt_arv_e_commerce_app/screens/product_detail_screen.dart';
 import 'package:mitt_arv_e_commerce_app/utils/constant.dart';
 
+// ignore: must_be_immutable
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
   final ProductController productController = Get.put(ProductController());
+  final Authcontroller authcontroller = Get.put(Authcontroller());
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: Padding(
-          padding: EdgeInsets.only(left: 15.w),
-          child: CircleAvatar(
-            radius: 20.r,
-            backgroundColor: Colors.black,
-            backgroundImage: NetworkImage(
-              "https://img.freepik.com/free-photo/portrait-pretty-woman-sunglasses-hat-blue-colorful-wall_231208-545.jpg?t=st=1741411165~exp=1741414765~hmac=7d0ccd27ae71c5128e639e486cae5019166ae3e7cd22360e4e30e4bc43665b77&w=740",
-            ),
-          ),
+      backgroundColor: Colors.white,
+      drawer: Drawer(
+        child: TextButton(
+          onPressed: () {
+            authcontroller.logout();
+          },
+          child: Text("Log-out"),
         ),
+      ),
+      appBar: AppBar(
+        forceMaterialTransparency: true,
+        backgroundColor: Colors.white,
         actions: [
           Padding(
-              padding: EdgeInsets.only(right: 15.w),
-              child: IconButton(
-                icon: Icon(Icons.shopping_cart, color: Template.button_clr),
-                onPressed: () => Get.to(() => CartScreen()),
-              )),
+            padding: EdgeInsets.only(right: 15.w),
+            child: IconButton(
+              icon: Icon(Icons.shopping_cart, color: Template.button_clr),
+              onPressed: () => Get.to(() => CartScreen()),
+            ),
+          ),
         ],
       ),
       body: SafeArea(
@@ -98,6 +103,7 @@ class HomeScreen extends StatelessWidget {
                           onChanged: (newValue) {
                             if (newValue != null) {
                               productController.sortProducts(newValue);
+                              // productController.getAllProducts();
                             }
                           },
                         ),

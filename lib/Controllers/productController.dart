@@ -7,8 +7,8 @@ import 'package:http/http.dart' as http;
 class ProductController extends GetxController {
   var productList = <dynamic>[].obs;
   var isLoading = false.obs;
-  var cartproduct = {}.obs; // Holds single product details
-  var cart = <Map<String, dynamic>>[].obs; // Holds cart items
+  var cartproduct = {}.obs;
+  var cart = <Map<String, dynamic>>[].obs;
   var product = Rxn<Map<String, dynamic>>();
   var filteredProductList = <dynamic>[].obs;
   var searchQuery = ''.obs;
@@ -154,11 +154,9 @@ class ProductController extends GetxController {
   }
 
   void updateSearchQuery(String query) {
-    // Cancel previous debounce timer if running
     if (_debounce?.isActive ?? false) _debounce?.cancel();
 
-    // Start a new debounce timer (500ms delay)
-    _debounce = Timer(Duration(milliseconds: 500), () {
+    _debounce = Timer(const Duration(milliseconds: 500), () {
       searchQuery.value = query;
     });
   }
@@ -166,18 +164,16 @@ class ProductController extends GetxController {
   void addToCart(Map<String, dynamic> product) {
     int index = cart.indexWhere((item) => item['id'] == product['id']);
     if (index != -1) {
-      // If product exists, increase quantity
       cart[index]['quantity'] += 1;
       cart[index]['totalPrice'] =
           cart[index]['quantity'] * cart[index]['price'];
       cart.refresh();
     } else {
-      // Add new product with quantity 1
       cart.add({
         'id': product['id'],
         'title': product['title'],
         'price': product['price'],
-        'image': product['image'], // Ensure image is stored
+        'image': product['image'],
         'quantity': 1,
         'totalPrice': product['price'],
       });
@@ -190,19 +186,16 @@ class ProductController extends GetxController {
     int index = cart.indexWhere((item) => item['id'] == id);
     if (index != -1) {
       if (cart[index]['quantity'] > 1) {
-        // Reduce quantity
         cart[index]['quantity'] -= 1;
         cart[index]['totalPrice'] =
             cart[index]['quantity'] * cart[index]['price'];
       } else {
-        // Remove item from cart if quantity is 1
         cart.removeAt(index);
       }
       cart.refresh();
     }
   }
 
-  // Get total price
   double get totalCartPrice =>
       cart.fold(0, (sum, item) => sum + item['totalPrice']);
 }

@@ -12,6 +12,7 @@ class Authcontroller extends GetxController {
   Future<void> signin({required String name, required String password}) async {
     try {
       isLoading.value = true;
+      await Future.delayed(const Duration(seconds: 2));
 
       var headers = {'Content-Type': 'application/x-www-form-urlencoded'};
       var request = http.Request(
@@ -67,5 +68,11 @@ class Authcontroller extends GetxController {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove('auth_token');
     Get.offAll(() => SigninScreen());
+  }
+
+  var obscureText = true.obs; // ✅ Make sure it's an observable
+
+  void toggleObscureText() {
+    obscureText.value = !obscureText.value;
   }
 }

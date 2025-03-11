@@ -1,10 +1,12 @@
 import 'dart:developer';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:mitt_arv_e_commerce_app/screens/Auth/signin_screen.dart';
+import 'package:mitt_arv_e_commerce_app/Screens/Auth/signin_screen.dart';
+import 'package:mitt_arv_e_commerce_app/Utils/constant.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:mitt_arv_e_commerce_app/screens/home_screen.dart';
+import 'package:mitt_arv_e_commerce_app/Screens/home_screen.dart';
 
 class Authcontroller extends GetxController {
   var isLoading = false.obs;
@@ -31,6 +33,11 @@ class Authcontroller extends GetxController {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('auth_token', token);
 
+        Template.showSnackbar(
+          title: "Success",
+          message: "Login successful!",
+          icon: Icons.check_circle,
+        );
         Get.offAll(() => HomeScreen());
       } else {
         log("Login failed: ${response.reasonPhrase}");
@@ -40,6 +47,17 @@ class Authcontroller extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  Future<void> signout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('auth_token');
+    Template.showSnackbar(
+      title: "Success",
+      message: "Log-out successful!",
+      icon: Icons.check_circle,
+    );
+    Get.offAll(() => const SigninScreen());
   }
 
   Future<bool> isTokenValid() async {
@@ -64,14 +82,7 @@ class Authcontroller extends GetxController {
     userData.value = decodedToken;
   }
 
-  Future<void> logout() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove('auth_token');
-    Get.offAll(() => SigninScreen());
-  }
-
-  var obscureText = true.obs; // ✅ Make sure it's an observable
-
+  var obscureText = true.obs;
   void toggleObscureText() {
     obscureText.value = !obscureText.value;
   }

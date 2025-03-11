@@ -3,7 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mitt_arv_e_commerce_app/Controllers/authController.dart';
-import 'package:mitt_arv_e_commerce_app/screens/Auth/signup_screen.dart';
+import 'package:mitt_arv_e_commerce_app/Screens/Auth/signup_screen.dart';
+import 'package:mitt_arv_e_commerce_app/Utils/constant.dart';
 import 'package:mitt_arv_e_commerce_app/widgets/button.dart';
 import 'package:mitt_arv_e_commerce_app/widgets/textfield.dart';
 
@@ -11,6 +12,7 @@ class SigninScreen extends StatefulWidget {
   const SigninScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _SigninScreenState createState() => _SigninScreenState();
 }
 
@@ -48,7 +50,7 @@ class _SigninScreenState extends State<SigninScreen> {
                   alignment: Alignment.center,
                   child: Text(
                     "Sign In",
-                    style: GoogleFonts.ubuntu(
+                    style: GoogleFonts.inter(
                       color: Colors.black,
                       fontSize: 30.sp,
                       fontWeight: FontWeight.w600,
@@ -62,7 +64,7 @@ class _SigninScreenState extends State<SigninScreen> {
                   alignment: Alignment.center,
                   child: Text(
                     "Hi! welcome back, you've been missed",
-                    style: GoogleFonts.ubuntu(
+                    style: GoogleFonts.inter(
                       color: Colors.black54,
                       fontSize: 15.sp,
                       fontWeight: FontWeight.w600,
@@ -90,11 +92,10 @@ class _SigninScreenState extends State<SigninScreen> {
                     child: Text(
                       "I don't have any account",
                       textAlign: TextAlign.end,
-                      style: GoogleFonts.ubuntu(
+                      style: GoogleFonts.inter(
                         color: Colors.black54,
                         fontSize: 15.sp,
                         fontWeight: FontWeight.w600,
-                        // decoration: TextDecoration.underline,
                       ),
                     ),
                   ),
@@ -105,9 +106,9 @@ class _SigninScreenState extends State<SigninScreen> {
                 Obx(
                   () {
                     return authController.isLoading.value
-                        ? const Center(
+                        ? Center(
                             child: CircularProgressIndicator(
-                            color: Colors.black,
+                            color: Template.button_clr,
                           ))
                         : CustomButton(
                             text: "Sign-In",

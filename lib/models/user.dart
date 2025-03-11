@@ -25,6 +25,5 @@ class UserModel {
     };
   }
 
-  @override
   List<Object?> get props => [id, username, email];
 }

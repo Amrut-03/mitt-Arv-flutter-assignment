@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:mitt_arv_e_commerce_app/utils/constant.dart';
 
 class CustomButton extends StatelessWidget {
@@ -13,8 +14,8 @@ class CustomButton extends StatelessWidget {
   final IconData? icon;
   final Color? iconColor;
 
-  CustomButton({
-    Key? key,
+  const CustomButton({
+    super.key,
     required this.text,
     required this.onPressed,
     this.color,
@@ -24,7 +25,7 @@ class CustomButton extends StatelessWidget {
     this.textStyle,
     this.icon,
     this.iconColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +43,7 @@ class CustomButton extends StatelessWidget {
         child: Text(
           text,
           style: textStyle ??
-              TextStyle(
+              GoogleFonts.inter(
                   fontSize: 18.sp,
                   fontWeight: FontWeight.bold,
                   color: Colors.white),

@@ -1,28 +1,35 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:mitt_arv_e_commerce_app/Controllers/cartController.dart';
+import 'package:mitt_arv_e_commerce_app/utils/constant.dart';
 
 class ProductController extends GetxController {
   var productList = <dynamic>[].obs;
   var isLoading = false.obs;
-  var cartproduct = {}.obs;
-  var cart = <Map<String, dynamic>>[].obs;
   var product = Rxn<Map<String, dynamic>>();
   var filteredProductList = <dynamic>[].obs;
   var searchQuery = ''.obs;
-  Timer? _debounce;
   var selectedSortOption = ''.obs;
   var selectedCategories = <String>[].obs;
   var minPrice = ''.obs;
   var maxPrice = ''.obs;
-  var minRating = ''.obs;
+  var maxRating = ''.obs;
+  var isPriceFilterEnabled = false.obs;
+  var isRatingFilterEnabled = false.obs;
+  Timer? _debounce;
+  final CartController cartController = Get.put(CartController());
+  TextEditingController searchController = TextEditingController();
 
   @override
   void onInit() {
     super.onInit();
     getAllProducts();
+    _debounce?.cancel();
+    super.onClose();
   }
 
   Future<void> getAllProducts() async {
@@ -34,10 +41,11 @@ class ProductController extends GetxController {
       if (response.statusCode == 200) {
         productList.value = json.decode(response.body);
       } else {
-        Get.snackbar("Error", "Failed to load products");
+        Template.showSnackbar(
+            title: "Error", message: "Failed to load products");
       }
     } catch (e) {
-      Get.snackbar("Error", "Something went wrong");
+      Template.showSnackbar(title: "Error", message: "Something went wrong");
     } finally {
       isLoading.value = false;
     }
@@ -61,10 +69,15 @@ class ProductController extends GetxController {
   }
 
   void sortProducts(String sortBy) {
+    if (sortBy == "None") {
+      resetSort();
+      return;
+    }
+
     selectedSortOption.value = sortBy;
 
-    List<dynamic> sortingList =
-        filteredProductList.isEmpty ? productList : filteredProductList;
+    List<dynamic> sortingList = List.from(
+        filteredProductList.isNotEmpty ? filteredProductList : productList);
 
     switch (sortBy) {
       case 'Price: Low to High':
@@ -87,20 +100,30 @@ class ProductController extends GetxController {
         break;
     }
 
-    filteredProductList.assignAll(sortingList);
+    filteredProductList.value = sortingList;
     filteredProductList.refresh();
   }
 
-  void applyFilters() {
-    log("Applying Filters...");
-    log("Selected Categories: $selectedCategories");
-    log("Min Price: $minPrice, Max Price: $maxPrice, Min Rating: $minRating");
+  void resetSort() {
+    selectedSortOption.value = "";
+    filteredProductList.value = List.from(productList);
+    filteredProductList.refresh();
+  }
 
-    double minPriceValue = double.tryParse(minPrice.value) ?? 0;
-    double maxPriceValue = double.tryParse(maxPrice.value) ?? double.infinity;
-    double minRatingValue = double.tryParse(minRating.value) ?? 0;
+  Future<void> applyFilters() async {
+    double? minPriceValue =
+        isPriceFilterEnabled.value && minPrice.value.isNotEmpty
+            ? double.tryParse(minPrice.value)
+            : null;
+    double? maxPriceValue =
+        isPriceFilterEnabled.value && maxPrice.value.isNotEmpty
+            ? double.tryParse(maxPrice.value)
+            : null;
 
-    filteredProductList.value = productList.where((product) {
+    // double minRatingValue = isRatingFilterEnabled.value ? ratingRange.start : 1;
+    // double maxRatingValue = isRatingFilterEnabled.value ? ratingRange.end : 5;
+
+    filteredProductList.value = await productList.where((product) {
       bool matchesSearch = searchQuery.value.isEmpty ||
           product["title"]
               .toString()
@@ -108,17 +131,25 @@ class ProductController extends GetxController {
               .contains(searchQuery.value.toLowerCase());
 
       bool matchesCategory = selectedCategories.isEmpty ||
-          selectedCategories.contains(product["category"]);
+          selectedCategories
+              .map((e) => e.toLowerCase().trim())
+              .contains(product["category"].toString().toLowerCase().trim());
 
-      bool matchesPrice = product["price"] >= minPriceValue &&
-          product["price"] <= maxPriceValue;
+      bool matchesPrice = true;
+      if (isPriceFilterEnabled.value &&
+          minPriceValue != null &&
+          maxPriceValue != null) {
+        matchesPrice = product["price"] >= minPriceValue &&
+            product["price"] <= maxPriceValue;
+      }
 
-      bool matchesRating = product["rating"]["rate"] >= minRatingValue;
+      bool matchesRating = !isRatingFilterEnabled.value ||
+          (product["rating"]["rate"] is num &&
+              (product["rating"]["rate"] as num).toDouble() <=
+                  (double.tryParse(maxRating.value) ?? 5.0));
 
       return matchesSearch && matchesCategory && matchesPrice && matchesRating;
     }).toList();
-
-    log("Filtered Products Count: ${filteredProductList.length}");
 
     filteredProductList.refresh();
 
@@ -127,11 +158,14 @@ class ProductController extends GetxController {
     }
   }
 
+  RangeValues ratingRange = RangeValues(1, 5);
   void resetFilters() {
     selectedCategories.clear();
-    minPrice.value = '';
-    maxPrice.value = '';
-    minRating.value = '';
+    minPrice.value = '1';
+    maxPrice.value = '1000';
+
+    ratingRange = RangeValues(1, 5);
+
     searchQuery.value = "";
 
     filteredProductList.assignAll(productList);
@@ -141,61 +175,53 @@ class ProductController extends GetxController {
   List<dynamic> get filteredProducts {
     if (filteredProductList.isNotEmpty) {
       return filteredProductList;
-    } else if (searchQuery.value.isNotEmpty) {
-      return productList
-          .where((product) => product["title"]
-              .toString()
-              .toLowerCase()
-              .contains(searchQuery.value.toLowerCase()))
-          .toList();
-    } else {
-      return productList;
     }
+    return productList;
   }
 
-  void updateSearchQuery(String query) {
-    if (_debounce?.isActive ?? false) _debounce?.cancel();
+  // void clearSearch() {
+  //   searchController.clear();
+  //   searchQuery.value = '';
+  //   filteredProductList.value = List.from(productList);
+  // }
+
+  // void searchProducts(String query) {
+  //   searchQuery.value = query;
+
+  //   if (query.isEmpty) {
+  //     filteredProductList.value = List.from(productList);
+  //   } else {
+  //     filteredProductList.value = productList
+  //         .where((product) => product['title']
+  //             .toString()
+  //             .toLowerCase()
+  //             .contains(query.toLowerCase()))
+  //         .toList();
+  //   }
+  // }
+
+  void searchProducts(String query) {
+    searchQuery.value = query;
+
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
 
     _debounce = Timer(const Duration(milliseconds: 500), () {
-      searchQuery.value = query;
+      if (query.isEmpty) {
+        filteredProductList.value = List.from(productList);
+      } else {
+        filteredProductList.value = productList
+            .where((product) => product['title']
+                .toString()
+                .toLowerCase()
+                .contains(query.toLowerCase()))
+            .toList();
+      }
     });
   }
 
-  void addToCart(Map<String, dynamic> product) {
-    int index = cart.indexWhere((item) => item['id'] == product['id']);
-    if (index != -1) {
-      cart[index]['quantity'] += 1;
-      cart[index]['totalPrice'] =
-          cart[index]['quantity'] * cart[index]['price'];
-      cart.refresh();
-    } else {
-      cart.add({
-        'id': product['id'],
-        'title': product['title'],
-        'price': product['price'],
-        'image': product['image'],
-        'quantity': 1,
-        'totalPrice': product['price'],
-      });
-      cart.refresh();
-    }
-    Get.snackbar("Added to Cart", "${product['title']} added!");
+  void clearSearch() {
+    searchController.clear();
+    searchQuery.value = '';
+    filteredProductList.value = List.from(productList);
   }
-
-  void removeFromCart(int id) {
-    int index = cart.indexWhere((item) => item['id'] == id);
-    if (index != -1) {
-      if (cart[index]['quantity'] > 1) {
-        cart[index]['quantity'] -= 1;
-        cart[index]['totalPrice'] =
-            cart[index]['quantity'] * cart[index]['price'];
-      } else {
-        cart.removeAt(index);
-      }
-      cart.refresh();
-    }
-  }
-
-  double get totalCartPrice =>
-      cart.fold(0, (sum, item) => sum + item['totalPrice']);
 }

@@ -1,8 +1,10 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mitt_arv_e_commerce_app/screens/home_screen.dart';
+import 'package:mitt_arv_e_commerce_app/Screens/home_screen.dart';
 import 'package:mitt_arv_e_commerce_app/widgets/button.dart';
 import 'package:mitt_arv_e_commerce_app/widgets/textfield.dart';
 
@@ -40,7 +42,7 @@ class SignupScreen extends StatelessWidget {
               ),
               Text(
                 "Create Account",
-                style: GoogleFonts.ubuntu(
+                style: GoogleFonts.inter(
                     color: Colors.black,
                     fontSize: 30.sp,
                     fontWeight: FontWeight.bold),
@@ -53,7 +55,7 @@ class SignupScreen extends StatelessWidget {
                 child: Text(
                   "Fill your information below or register with your social account.",
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.ubuntu(
+                  style: GoogleFonts.inter(
                       color: Colors.black54,
                       fontSize: 15.sp,
                       fontWeight: FontWeight.w600),
@@ -87,7 +89,7 @@ class SignupScreen extends StatelessWidget {
               CustomButton(
                 text: "Sign-up",
                 onPressed: () {
-                  Get.to(HomeScreen());
+                  Get.to(() => HomeScreen());
                 },
               )
             ],

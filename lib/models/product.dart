@@ -41,7 +41,6 @@ class ProductModel {
     };
   }
 
-  @override
   List<Object?> get props =>
       [id, title, description, imageUrl, price, rating, category];
 }

@@ -1,5 +1,3 @@
-
-https://github.com/user-attachments/assets/e2e08da1-fd49-40d7-9dd3-2878ed459f55
 # E-Commerce App
 
 This project is a Flutter-based application built for cross-platform support, following a clean architecture with proper state management and responsive UI design.
@@ -13,5 +11,4 @@ flutter run
 ```
 
 ## Demo Video
-
-Uploading Untitled video - Made with Clipchamp (4) (online-video-cutter.com).mp4…
+https://github.com/user-attachments/assets/cff9f179-6d94-40b9-8037-69c6e52d9ea2
